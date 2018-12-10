@@ -1,0 +1,49 @@
+aws_region  = "ap-northeast-1"
+service     = "test-app"
+build_image = "test-app"
+
+[material.prod]
+aws_profile = "prod"
+ecs_cluster = "test-app"
+role_arn    = "arn:aws:iam::11111111:role/test-app"
+# task = `If not set, cluster value is set`
+# execution_role_arn = `If not set, role_arn value is set`
+# log_group = `If not set, cluster value is set`
+# log_prefix = `If not set, cluster value is set`
+
+[material.stg]
+aws_profile = "stage"
+ecs_cluster = "test-app"
+role_arn    = "arn:aws:iam::22222222:role/test-app"
+
+### app
+[container.app]
+image  = "test-app"
+ecr    = true
+port   = 3000
+cpu    = 256
+memory = 512
+# entrypoint = ""
+# workingdirectory = ""
+
+[[environment."app"]]
+name = "TZ"
+value = "Asia/Tokyo"
+
+[[environment."app_prod"]]
+name = "DATABASE_PASSWORD"
+value = "hoge"
+
+[[environment."app_stg"]]
+name = "DATABASE_PASSWORD"
+value = "fuga"
+
+[[command."app"]]
+value = ["sleep", "3600"]
+
+### nginx
+[container.nginx]
+image  = ""
+port   = 8080
+cpu    = 256
+memory = 512
