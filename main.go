@@ -11,7 +11,6 @@ import (
 
 func init() {
 	log.SetOutput(os.Stdout)
-	log.SetOutput(os.Stderr)
 	log.SetPrefix(appName + ": ")
 }
 
