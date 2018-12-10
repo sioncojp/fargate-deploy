@@ -46,6 +46,7 @@ type Config struct {
 	BuildImage   string                   `toml:"build_image"`
 	Materials    map[string]Material      `toml:"material"`
 	Containers   map[string]Container     `toml:"container"`
+	Specs        map[string][]Spec        `toml:"Spec"`
 	Environments map[string][]Environment `toml:"environment"`
 	Commands     map[string][]Command     `toml:"command"`
 }
@@ -72,8 +73,15 @@ type Container struct {
 	Port             int64
 	EntryPoint       string
 	WorkingDirectory string
+	Specs            []Spec
 	Environments     []Environment
 	Command          Command
+}
+
+// Spec ... Add cpu, memory variables for container.
+type Spec struct {
+	CPU    int64
+	Memory int64
 }
 
 // Environment ... Add environment variables for container.

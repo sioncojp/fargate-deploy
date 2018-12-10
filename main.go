@@ -40,6 +40,7 @@ func Run() int {
 		EcrID = c.String("id")
 		Lifecycle = c.Bool("lifecycle")
 
+		specs := conf.NewSpecs(c.String("env"))
 		envs := conf.NewEnvironments(c.String("env"))
 		cmds := conf.NewCommands()
 		cs := conf.NewContainers()
@@ -49,6 +50,12 @@ func Run() int {
 			if im == c.String("env") {
 				Env = c.String("env")
 				for _, container := range cs {
+					for ie, e := range specs {
+						// validate container name
+						if container.Name == ie {
+							container.Specs = e
+						}
+					}
 					for ie, e := range envs {
 						// validate container name
 						if container.Name == ie {
@@ -76,6 +83,23 @@ func Run() int {
 		log.Fatalf("failed to %s", err)
 	}
 	return 0
+}
+
+// NewSpecs ...  Initialize by parse Specs in config
+// Output : map[app:map[CPU:1024 Memory:2048], db:map[CPU:256 Memory:512]]
+func (c *Config) NewSpecs(env string) map[string][]Spec {
+	specs := make(map[string][]Spec)
+
+	for i, e := range c.Specs {
+		for _, ee := range e {
+			containerName := strings.Split(i, ".")
+
+			if len(containerName) == 1 || strings.HasSuffix(i, env) {
+				specs[containerName[0]] = append(specs[containerName[0]], Spec{ee.CPU, ee.Memory})
+			}
+		}
+	}
+	return specs
 }
 
 // NewEnvironments ...  Initialize by parse Environments in config
@@ -122,6 +146,7 @@ func (c *Config) NewContainers() []Container {
 			cs.Port,
 			cs.EntryPoint,
 			cs.WorkingDirectory,
+			nil,
 			nil,
 			Command{},
 		}

@@ -27,15 +27,15 @@ memory = 512
 # workingdirectory = ""
 
 [[environment."app"]]
-name = "TZ"
+name  = "TZ"
 value = "Asia/Tokyo"
 
 [[environment."app_prod"]]
-name = "DATABASE_PASSWORD"
+name  = "DATABASE_PASSWORD"
 value = "hoge"
 
 [[environment."app_stg"]]
-name = "DATABASE_PASSWORD"
+name  = "DATABASE_PASSWORD"
 value = "fuga"
 
 [[command."app"]]
@@ -45,5 +45,11 @@ value = ["sleep", "3600"]
 [container.nginx]
 image  = ""
 port   = 8080
-cpu    = 256
-memory = 512
+
+[[spec."nginx_prod"]]
+cpu    = "1024"
+memory = "2048"
+
+[[spec."nginx_stg"]]
+cpu    = "256"
+memory = "512"

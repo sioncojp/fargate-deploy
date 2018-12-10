@@ -44,6 +44,7 @@ func (e *ECS) NewContainerDefinition(m *Material) []*ecs.ContainerDefinition {
 	var entrypoint []*string
 	var port []*ecs.PortMapping
 	var image string
+	var spec Spec
 
 	for _, container := range m.Containers {
 
@@ -70,10 +71,23 @@ func (e *ECS) NewContainerDefinition(m *Material) []*ecs.ContainerDefinition {
 			image = fmt.Sprintf(ecrImageFormat, EcrID, AWSRegion, container.Image, Env)
 		}
 
+		// set CPU, Memory
+		spec.CPU = container.CPU
+		spec.Memory = container.Memory
+		for _, v := range container.Specs {
+			if spec.CPU == 0 {
+				spec.CPU = v.CPU
+			}
+
+			if spec.Memory == 0 {
+				spec.Memory = v.Memory
+			}
+		}
+
 		cd := &ecs.ContainerDefinition{
 			Name:      aws.String(container.Name),
-			Cpu:       aws.Int64(container.CPU),
-			Memory:    aws.Int64(container.Memory),
+			Cpu:       aws.Int64(spec.CPU),
+			Memory:    aws.Int64(spec.Memory),
 			Essential: aws.Bool(true),
 			Image: aws.String(
 				image,
