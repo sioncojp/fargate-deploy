@@ -9,10 +9,6 @@ import (
 
 // DockerImageUpload ... Docker build and tagging and push image
 func DockerImageUpload() error {
-	if err := DockerImageRemovePrune(); err != nil {
-		return err
-	}
-
 	images := NewDockerImage()
 
 	if err := DockerBuild(images); err != nil {
@@ -85,18 +81,6 @@ func DockerSetTag(images []string) error {
 		}
 	}
 
-	return nil
-}
-
-// DockerImageRemovePrune ... Remove unused images
-func DockerImageRemovePrune() error {
-	if out, err := exec.Command(
-		"docker",
-		"image",
-		"prune",
-	).CombinedOutput(); err != nil {
-		return fmt.Errorf("docker image prune: %s: %s", err, string(out))
-	}
 	return nil
 }
 
