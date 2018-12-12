@@ -63,8 +63,6 @@ func (e *ECS) NewContainerDefinition(m *Material) []*ecs.ContainerDefinition {
 			})
 		}
 
-		port = append(port, &ecs.PortMapping{ContainerPort: aws.Int64(container.Port)})
-
 		// Set Image Name
 		image = fmt.Sprintf("%s:%s", container.Image, Env)
 		if container.Ecr && EcrID != "" {
@@ -95,13 +93,18 @@ func (e *ECS) NewContainerDefinition(m *Material) []*ecs.ContainerDefinition {
 			EntryPoint:       entrypoint,
 			WorkingDirectory: workingdir,
 			Environment:      env,
-			PortMappings:     port,
 			LogConfiguration: &ecs.LogConfiguration{
 				LogDriver: aws.String("awslogs"),
 				Options:   e.NewLogOption(m),
 			},
 			LinuxParameters: &ecs.LinuxParameters{InitProcessEnabled: aws.Bool(true)},
 			Ulimits:         e.NewUlimit(m),
+		}
+
+		// set portMapping
+		if container.Port == 0 {
+			port = append(port, &ecs.PortMapping{ContainerPort: aws.Int64(container.Port)})
+			cd.SetPortMappings(port)
 		}
 
 		// set command
