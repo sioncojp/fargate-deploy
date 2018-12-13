@@ -102,7 +102,7 @@ func (e *ECS) NewContainerDefinition(m *Material) []*ecs.ContainerDefinition {
 		}
 
 		// set portMapping
-		if container.Port == 0 {
+		if container.Port != 0 {
 			port = append(port, &ecs.PortMapping{ContainerPort: aws.Int64(container.Port)})
 			cd.SetPortMappings(port)
 		}
