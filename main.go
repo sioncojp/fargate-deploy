@@ -92,7 +92,7 @@ func (c *Config) NewSpecs(env string) map[string][]Spec {
 
 	for i, e := range c.Specs {
 		for _, ee := range e {
-			containerName := strings.Split(i, ".")
+			containerName := strings.Split(i, "_")
 
 			if len(containerName) == 1 || strings.HasSuffix(i, env) {
 				specs[containerName[0]] = append(specs[containerName[0]], Spec{ee.CPU, ee.Memory})
@@ -109,7 +109,7 @@ func (c *Config) NewEnvironments(env string) map[string][]Environment {
 
 	for i, e := range c.Environments {
 		for _, ee := range e {
-			containerName := strings.Split(i, ".")
+			containerName := strings.Split(i, "_")
 
 			if len(containerName) == 1 || strings.HasSuffix(i, env) {
 				envs[containerName[0]] = append(envs[containerName[0]], Environment{ee.Name, ee.Value})
@@ -126,7 +126,7 @@ func (c *Config) NewCommands() map[string]Command {
 
 	for i, e := range c.Commands {
 		for _, ee := range e {
-			containerName := strings.Split(i, ".")
+			containerName := strings.Split(i, "_")
 			cmd[containerName[0]] = ee
 		}
 	}
