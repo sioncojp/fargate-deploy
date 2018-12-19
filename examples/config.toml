@@ -30,13 +30,21 @@ memory = 512
 name  = "TZ"
 value = "Asia/Tokyo"
 
-[[environment."app_prod"]]
-name  = "DATABASE_PASSWORD"
+[[secret."app_prod"]]
+name  = "PASSWORD"
 value = "hoge"
 
-[[environment."app_stg"]]
-name  = "DATABASE_PASSWORD"
+[[secret."app_stg"]]
+name  = "PASSWORD"
 value = "fuga"
+
+[[secret."app_prod"]]
+name  = "DATABASE_PASSWORD"
+value = "ssm_path_name_hoge"
+
+[[secret."app_stg"]]
+name  = "DATABASE_PASSWORD"
+value = "ssm_path_name_hoge"
 
 [[command."app"]]
 value = ["sleep", "3600"]

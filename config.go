@@ -49,6 +49,7 @@ type Config struct {
 	Specs        map[string][]Spec        `toml:"Spec"`
 	Environments map[string][]Environment `toml:"environment"`
 	Commands     map[string][]Command     `toml:"command"`
+	Secrets      map[string][]Secret      `toml:"secret"`
 }
 
 // Material ... Register task and store the information necessary for updating the service.
@@ -75,6 +76,7 @@ type Container struct {
 	WorkingDirectory string
 	Specs            []Spec
 	Environments     []Environment
+	Secrets          []Secret
 	Command          Command
 }
 
@@ -82,6 +84,12 @@ type Container struct {
 type Spec struct {
 	CPU    int64
 	Memory int64
+}
+
+// Secret ... Add secret variables for container.
+type Secret struct {
+	Name  string
+	Value string
 }
 
 // Environment ... Add environment variables for container.

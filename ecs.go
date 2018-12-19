@@ -41,6 +41,7 @@ func (e *ECS) NewContainerDefinition(m *Material) []*ecs.ContainerDefinition {
 	var result []*ecs.ContainerDefinition
 	var workingdir *string
 	var env []*ecs.KeyValuePair
+	var secret []*ecs.Secret
 	var entrypoint []*string
 	var port []*ecs.PortMapping
 	var image string
@@ -60,6 +61,13 @@ func (e *ECS) NewContainerDefinition(m *Material) []*ecs.ContainerDefinition {
 			env = append(env, &ecs.KeyValuePair{
 				Name:  aws.String(v.Name),
 				Value: aws.String(v.Value),
+			})
+		}
+
+		for _, v := range container.Secrets {
+			secret = append(secret, &ecs.Secret{
+				Name:      aws.String(v.Name),
+				ValueFrom: aws.String(v.Value),
 			})
 		}
 
@@ -93,6 +101,7 @@ func (e *ECS) NewContainerDefinition(m *Material) []*ecs.ContainerDefinition {
 			EntryPoint:       entrypoint,
 			WorkingDirectory: workingdir,
 			Environment:      env,
+			Secrets:          secret,
 			LogConfiguration: &ecs.LogConfiguration{
 				LogDriver: aws.String("awslogs"),
 				Options:   e.NewLogOption(m),
@@ -164,9 +173,11 @@ func (e *ECS) ECSRegisterTaskDefinition(m *Material, cd []*ecs.ContainerDefiniti
 // UpdateService ... Update ECS Service.
 func (e *ECS) UpdateService(m *Material, taskRoleArn *string) error {
 	input := &ecs.UpdateServiceInput{
-		Cluster:        aws.String(m.ECSCluster),
-		Service:        aws.String(Service),
-		TaskDefinition: taskRoleArn,
+		Cluster:            aws.String(m.ECSCluster),
+		Service:            aws.String(Service),
+		TaskDefinition:     taskRoleArn,
+		ForceNewDeployment: aws.Bool(true),
+		PlatformVersion:    aws.String("1.3.0"), // TODO: if LATEST supports Secrets, change it to LATEST
 	}
 	result, err := e.Session.UpdateService(input)
 	if err != nil {

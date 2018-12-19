@@ -4,17 +4,11 @@ import (
 	"errors"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/urfave/cli"
 )
 
-func init() {
-	log.SetOutput(os.Stdout)
-	log.SetPrefix(appName + ": ")
-}
-
-// Run ...
+// Run ... Running fargate-deploy
 func Run() int {
 	app := FlagSet()
 
@@ -42,6 +36,7 @@ func Run() int {
 
 		specs := conf.NewSpecs(c.String("env"))
 		envs := conf.NewEnvironments(c.String("env"))
+		secrets := conf.NewSecrets(c.String("env"))
 		cmds := conf.NewCommands()
 		cs := conf.NewContainers()
 
@@ -60,6 +55,12 @@ func Run() int {
 						// validate container name
 						if container.Name == ie {
 							container.Environments = e
+						}
+					}
+					for ie, e := range secrets {
+						// validate container name
+						if container.Name == ie {
+							container.Secrets = e
 						}
 					}
 					for ie, e := range cmds {
@@ -83,74 +84,4 @@ func Run() int {
 		log.Fatalf("failed to %s", err)
 	}
 	return 0
-}
-
-// NewSpecs ...  Initialize by parse Specs in config
-// Output : map[app:map[CPU:1024 Memory:2048], db:map[CPU:256 Memory:512]]
-func (c *Config) NewSpecs(env string) map[string][]Spec {
-	specs := make(map[string][]Spec)
-
-	for i, e := range c.Specs {
-		for _, ee := range e {
-			containerName := strings.Split(i, "_")
-
-			if len(containerName) == 1 || strings.HasSuffix(i, env) {
-				specs[containerName[0]] = append(specs[containerName[0]], Spec{ee.CPU, ee.Memory})
-			}
-		}
-	}
-	return specs
-}
-
-// NewEnvironments ...  Initialize by parse Environments in config
-// Output : map[app:map[NODE_ENV:production PORT:3000], db:map[PASSWORD:xxxx]]
-func (c *Config) NewEnvironments(env string) map[string][]Environment {
-	envs := make(map[string][]Environment)
-
-	for i, e := range c.Environments {
-		for _, ee := range e {
-			containerName := strings.Split(i, "_")
-
-			if len(containerName) == 1 || strings.HasSuffix(i, env) {
-				envs[containerName[0]] = append(envs[containerName[0]], Environment{ee.Name, ee.Value})
-			}
-		}
-	}
-	return envs
-}
-
-// NewCommands ...  Initialize by parse Commands in config
-// Output : map[app:["go", "run", "hoge.go"], db:["mysql", "help"]]
-func (c *Config) NewCommands() map[string]Command {
-	cmd := make(map[string]Command)
-
-	for i, e := range c.Commands {
-		for _, ee := range e {
-			containerName := strings.Split(i, "_")
-			cmd[containerName[0]] = ee
-		}
-	}
-	return cmd
-}
-
-// NewContainers ... Initialize by parse Containers in config
-func (c *Config) NewContainers() []Container {
-	var containers []Container
-	for i, cs := range c.Containers {
-		v := Container{
-			i,
-			cs.Image,
-			cs.Ecr,
-			cs.CPU,
-			cs.Memory,
-			cs.Port,
-			cs.EntryPoint,
-			cs.WorkingDirectory,
-			nil,
-			nil,
-			Command{},
-		}
-		containers = append(containers, v)
-	}
-	return containers
 }
