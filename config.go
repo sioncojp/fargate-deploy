@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	appName        = "fargate-deploy"
-	ecrImageFormat = "%s.dkr.ecr.%s.amazonaws.com/%s:%s"
+	appName              = "fargate-deploy"
+	ecrImageFormat       = "%s.dkr.ecr.%s.amazonaws.com/%s:%s"
+	ecrSetImageTagFormat = "%s.dkr.ecr.%s.amazonaws.com/%s"
 )
 
 var (

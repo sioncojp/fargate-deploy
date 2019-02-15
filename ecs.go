@@ -7,6 +7,8 @@ import (
 
 	"strconv"
 
+	"strings"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ecs"
 )
@@ -72,9 +74,18 @@ func (e *ECS) NewContainerDefinition(m *Material) []*ecs.ContainerDefinition {
 		}
 
 		// Set Image Name
-		image = fmt.Sprintf("%s:%s", container.Image, Env)
 		if container.Ecr && EcrID != "" {
-			image = fmt.Sprintf(ecrImageFormat, EcrID, AWSRegion, container.Image, Env)
+			if strings.Contains(container.Image, ":") {
+				image = fmt.Sprintf(ecrSetImageTagFormat, EcrID, AWSRegion, container.Image)
+			} else {
+				image = fmt.Sprintf(ecrImageFormat, EcrID, AWSRegion, container.Image, Env)
+			}
+		} else {
+			if strings.Contains(container.Image, ":") {
+				image = fmt.Sprintf("%s", container.Image)
+			} else {
+				image = fmt.Sprintf("%s:%s", container.Image, Env)
+			}
 		}
 
 		// set CPU, Memory
