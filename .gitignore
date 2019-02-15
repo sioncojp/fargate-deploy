@@ -1,7 +1,3 @@
-_vendor
-.vendor
-vendor
-_vendor-*
 *.pid
 bin/
 *.swp

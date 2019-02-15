@@ -1,5 +1,8 @@
 # build stage
 FROM golang:alpine AS build-env
+
+ENV GO111MODULE on
+
 ADD . /src
 RUN cd /src && go build -o fargate-deploy 
 
