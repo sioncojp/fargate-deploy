@@ -26,9 +26,6 @@ fargate-deploy -c config.toml -e prod -i "111111111" -p
 ```
 make help
 
-make dep/init
-make dep
-
 ### tar.gz for darwin-amd64, linux-amd64
 make dist
 ```
