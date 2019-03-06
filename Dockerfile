@@ -1,13 +1,14 @@
 # build stage
-FROM golang:alpine AS build-env
+FROM golang:latest AS build-env
 
-ENV GO111MODULE on
+ENV GO111MODULE auto
 
 ADD . /src
-RUN cd /src && go build -o fargate-deploy 
+WORKDIR /src
+RUN make build
 
 # final stage
 FROM alpine
 WORKDIR /app
-COPY --from=build-env /src/fargate-deploy /app/
+COPY --from=build-env /src/cmd/fargate-deploy /app/
 ENTRYPOINT ./fargate-deploy
